@@ -1,0 +1,42 @@
+name: cms
+recipe: laravel
+proxy:
+  appserver:
+    - cms.lndo.site
+  mailhog:
+    - mail.cms.lndo.site
+services:
+  appserver:
+    config: {}
+    composer_version: "2.6.5"
+    type: php:8.1
+    via: apache:2.4
+    ssl: true
+    webroot: public
+  mailhog:
+    type: mailhog
+    hogfrom:
+      - appserver
+  database: disabled
+tooling:
+  composer:
+    service: appserver
+    cmd: composer --ansi
+  php:
+    service: appserver
+    cmd: php
+  mysql:
+    service: ":host"
+    description: Drops into a MySQL shell on a database service
+    cmd: mysql -uroot
+    options:
+      host:
+        description: The database service to use
+        default: database
+        alias:
+          - h
+  laravel:
+    service: appserver
+  artisan:
+    service: appserver
+    cmd: php artisan
